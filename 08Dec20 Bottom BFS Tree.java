@@ -5,23 +5,35 @@ class Tree
 {
     public ArrayList<Integer> reverseLevelOrder(Node node) 
     {
-        int h = height(node);
+        Queue<Node> queue = new LinkedList<>();
         ArrayList<Integer> list = new ArrayList<>();
-        for (int i = h ; i >= 0; i--) {
-            add(node, list, i);
+        Stack<Queue<Node>> stack = new Stack<>();
+        if (node==null) return list;
+        queue.offer(node);
+        while(!queue.isEmpty()) {
+            Queue<Node> q = new LinkedList<>();
+            Queue<Node> qr = new LinkedList<>();
+            while(!queue.isEmpty()) {
+                Node n = queue.poll();
+                if (n!=null) {
+                    q.offer(n);
+                    qr.offer(n);
+                }
+            }
+            stack.push(q);
+
+            while(!qr.isEmpty()) {
+                Node nd = qr.poll();
+                queue.offer(nd.left);
+                queue.offer(nd.right);
+            }
+        }
+        while(!stack.isEmpty()) {
+            queue = stack.pop();
+            while(!queue.isEmpty()) {
+                list.add(queue.poll().data);
+            }
         }
         return list;
     }
-    
-    private void add(Node node, ArrayList<Integer> list, int h) {
-        if (node==null) return;
-        if (h==0) list.add(node.data);
-        add(node.left, list, h-1);
-        add(node.right, list, h-1);
-    }
-    
-    private int height(Node node) {
-        if (node==null) return 0;
-        return Math.max(height(node.left),height(node.right))+1;
-    }
-} 
+}      
